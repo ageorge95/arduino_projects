@@ -3,7 +3,8 @@
 #include <ESP8266WebServer.h>
 
 String SerialMessage; // for incoming serial data
-int max_string_size = 50000;
+String content;
+int max_string_size = 1000;
 
 const char *ssid = "status_relee";
 const char *password = "homita2022";
@@ -12,14 +13,30 @@ ESP8266WebServer server(80);
 
 /* Go to http://192.168.4.1 in a web browser connected to this access point to see it.*/
 void handleRoot() {
-  server.send(200, "text/html", "<a href=\"http://192.168.4.1\">HOME</a></br><a href=\"http://192.168.4.1\\sendSerial?message=START_R1\">START_R1</a></br><a href=\"http://192.168.4.1\\sendSerial?message=START_R2\">START_R2</a></br>"
-                                + SerialMessage);
+
+  content = String("<a href=\"http://192.168.4.1\">HOME</a></br>")
+          + String("<a href=\"http://192.168.4.1\\sendSerial?message=START_R1\">START_R1</a></br>")
+          + String("<a href=\"http://192.168.4.1\\sendSerial?message=START_R2\">START_R2</a></br>")
+          + String("<br>START<br>")
+          + SerialMessage
+          + String("<br>END<br>");
+  
+  server.send(200, "text/html", content);
 }
 
 void sendSerial() {
   Serial.print(server.arg("message"));
-  server.send(200, "text/html", "<a href=\"http://192.168.4.1\">HOME</a></br><a href=\"http://192.168.4.1\\sendSerial?message=START_R1\">START_R1</a></br><a href=\"http://192.168.4.1\\sendSerial?message=START_R2\">START_R2</a></br>MESSAGE SENT </br>"
-                                + server.arg("message") + "</br>" + SerialMessage);
+  
+  content = String("<a href=\"http://192.168.4.1\">HOME</a></br>")
+          + String("<a href=\"http://192.168.4.1\\sendSerial?message=START_R1\">START_R1</a></br>")
+          + String("<a href=\"http://192.168.4.1\\sendSerial?message=START_R2\">START_R2</a></br>")
+          + String("</br>MESSAGE SENT </br>")
+          + server.arg("message")
+          + String("<br>START<br>")
+          + SerialMessage
+          + String("<br>END<br>");
+          
+  server.send(200, "text/html", content);
 }
 
 void setup() {
