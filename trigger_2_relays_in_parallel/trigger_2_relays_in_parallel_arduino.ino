@@ -7,6 +7,8 @@ int relay2_on_time_s = 30*60;
 int relay1_off_time_s = 1*60*60;
 int relay2_off_time_s = 1*60*60;
 
+int cycle_sec = 5;
+
 int DIGITAL_PIN_RELAY_1 = 7;
 int DIGITAL_PIN_RELAY_2 = 8;
 
@@ -39,28 +41,30 @@ void loop() {
   message = "STATUS: count_1_s " + String(count1) + " || count_2_s " + String(count2)
   + " || relay1_on_time_s " + String(relay1_on_time_s) + " || relay2_on_time_s " + String(relay2_on_time_s)
   + " || relay1_off_time_s " + String(relay1_off_time_s) + " || relay2_off_time_s " + String(relay2_off_time_s);
-  Serial.print(message);
-  delay(5000);
-  count1 += 5;
-  count2 += 5;  
+  Serial.print(message);   
 
-  if (count1 >= relay1_on_time_s) {
+  // turn off conditions
+  if ((count1 <= relay1_on_time_s) && ((count1 + cycle_sec) > relay1_on_time_s)) {
     digitalWrite(DIGITAL_PIN_RELAY_1, HIGH);
   }
-
-  if (count1 >= (relay1_on_time_s + relay1_off_time_s)) {
+  
+  if ((count2 <= relay2_on_time_s) && ((count2 + cycle_sec) > relay2_on_time_s)) {
+    digitalWrite(DIGITAL_PIN_RELAY_2, HIGH);
+  }
+  
+  // turn on conditions
+  if ((count1 <= (relay1_on_time_s + relay1_off_time_s)) && ((count1 + cycle_sec) > (relay1_on_time_s + relay1_off_time_s))) {
     digitalWrite(DIGITAL_PIN_RELAY_1, LOW);
     count1 = 0;
   }
-
-  if (count2 >= relay2_on_time_s) {
-    digitalWrite(DIGITAL_PIN_RELAY_2, HIGH);
-  }
-
-  if (count2 >= (relay2_on_time_s + relay2_off_time_s)) {
+  
+  if ((count2 <= (relay2_on_time_s + relay2_off_time_s)) && ((count2 + cycle_sec) > (relay2_on_time_s + relay2_off_time_s))) {
     digitalWrite(DIGITAL_PIN_RELAY_2, LOW);
     count2 = 0;
   }
   
-
+  delay(cycle_sec * 1000);
+  count1 += cycle_sec;
+  count2 += cycle_sec; 
+  
 }
