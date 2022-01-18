@@ -1,11 +1,11 @@
 int count1 = 0;
 int count2 = 0;
 
-int relay1_on_time_s = 10*60;
-int relay2_on_time_s = 30*60;
+int relay1_on_time_s = 3*60;
+int relay2_on_time_s = 8*60;
 
-int relay1_off_time_s = 1*60*60;
-int relay2_off_time_s = 1*60*60;
+int relay1_off_time_s = 15*60;
+int relay2_off_time_s = 15*60;
 
 int cycle_sec = 5;
 
@@ -25,7 +25,7 @@ void loop() {
   if (Serial.available() > 0) {
     // read the incoming string:
     SerialMessage = Serial.readString();
-    Serial.println(SerialMessage);
+    Serial.print(SerialMessage);
     if (SerialMessage == "START_R1") {
       digitalWrite(DIGITAL_PIN_RELAY_1, LOW);
       count1 = 0;
@@ -38,10 +38,10 @@ void loop() {
       }
   }
   
-  message = "STATUS: count_1_s " + String(count1) + " || count_2_s " + String(count2)
-  + " || relay1_on_time_s " + String(relay1_on_time_s) + " || relay2_on_time_s " + String(relay2_on_time_s)
-  + " || relay1_off_time_s " + String(relay1_off_time_s) + " || relay2_off_time_s " + String(relay2_off_time_s);
-  Serial.print(message);   
+  message = String("STATUS: ")
+  + "count_1 " + String(count1) + " " + String(digitalRead(DIGITAL_PIN_RELAY_1)) + " " + String(relay1_on_time_s) + " " + String(relay1_off_time_s)
+  + "|| count_2 " + String(count2) + " " + String(digitalRead(DIGITAL_PIN_RELAY_2)) + " " + String(relay2_on_time_s) + " " + String(relay2_off_time_s);
+  Serial.println(message);   
 
   // turn off conditions
   if ((count1 <= relay1_on_time_s) && ((count1 + cycle_sec) > relay1_on_time_s)) {
